@@ -1,0 +1,98 @@
+﻿(*********************************************
+
+  Import-Export
+  Version   := RSLogix 5000 v32.00
+  Owner     := VanErtEng, 
+  Exported  := Thu Jul 22 10:03:04 2021
+
+  Note:  File encoded in UTF-8.  Only edit file in a program 
+         which supports UTF-8 (like Notepad, not Wordpad).
+
+**********************************************)
+IE_VER := 2.23;
+
+CONTROLLER OPC_TEST (ProcessorType := "1756-L71",
+                     Major := 32,
+                     TimeSlice := 20,
+                     ShareUnusedTimeSlice := 1,
+                     RedundancyEnabled := 0,
+                     KeepTestEditsOnSwitchOver := 0,
+                     DataTablePadPercentage := 50,
+                     SecurityCode := 0,
+                     ChangesToDetect := 16#ffff_ffff_ffff_ffff,
+                     SFCExecutionControl := "CurrentActive",
+                     SFCRestartPosition := "MostRecent",
+                     SFCLastScan := "DontScan",
+                     SerialNumber := 16#010b_08aa,
+                     MatchProjectToController := No,
+                     CanUseRPIFromProducer := No,
+                     InhibitAutomaticFirmwareUpdate := 0,
+                     PassThroughConfiguration := EnabledWithAppend,
+                     DownloadProjectDocumentationAndExtendedProperties := Yes,
+                     ReportMinorOverflow := 0)
+	DATATYPE MyStruct (FamilyType := NoFamily)
+		REAL ElementReal;
+		DINT ElementDint;
+		SINT ZZZZZZZZZZMyStruct2 (Hidden := 1);
+		BIT ElementBool ZZZZZZZZZZMyStruct2 : 0;
+		DINT ElementArray[10];
+	END_DATATYPE
+
+	MODULE Local (Parent := "Local",
+	              ParentModPortId := 1,
+	              CatalogNumber := "1756-L71",
+	              Vendor := 1,
+	              ProductType := 14,
+	              ProductCode := 92,
+	              Major := 32,
+	              Minor := 11,
+	              PortLabel := "RxBACKPLANE",
+	              ChassisSize := 4,
+	              Slot := 0,
+	              Mode := 2#0000_0000_0000_0001,
+	              CompatibleModule := 0,
+	              KeyMask := 2#0000_0000_0001_1111)
+	END_MODULE
+
+	TAG
+		Tag1 : DINT (RADIX := Decimal) := 0;
+		Tag2 : REAL (RADIX := Float) := 0.00000000e+000;
+		Tag3 : BOOL (RADIX := Decimal) := 0;
+		Tag4 : MyStruct  := [0.00000000e+000,0,0,[0,0,0,0,0,0,0,0,0,0]];
+	END_TAG
+
+	PROGRAM MainProgram (MAIN := "MainRoutine",
+	                     MODE := 0,
+	                     DisableFlag := 0,
+	                     UseAsFolder := 0)
+		TAG
+		END_TAG
+
+		ROUTINE MainRoutine 
+		END_ROUTINE
+
+		CHILD_PROGRAMS
+		END_CHILD_PROGRAMS
+
+	END_PROGRAM
+
+	TASK MainTask (Type := CONTINUOUS,
+	               Rate := 10,
+	               Priority := 10,
+	               Watchdog := 500,
+	               DisableUpdateOutputs := No,
+	               InhibitTask := No)
+			MainProgram;
+	END_TASK
+
+CONFIG CST(SystemTimeMasterID := 0) END_CONFIG
+
+CONFIG TimeSynchronize(Priority1 := 128,
+	                                 Priority2 := 128,
+	                                 PTPEnable := 0) END_CONFIG
+
+CONFIG WallClockTime(LocalTimeAdjustment := 0,
+	                     TimeZone := 0) END_CONFIG
+
+END_CONTROLLER
+
