@@ -20,25 +20,30 @@ class OpcConnection(object):
         self.server = Server()
         self.server.set_endpoint("opc.tcp://0.0.0.0:4840/ethernetip/server/")
         # setup our own namespace, not really necessary but should as spec
-        uri = "https://github.com/ASolchen"
-        idx = self.server.register_namespace("ETHIP_BRIDGE")
+        self.uri = "https://github.com/ASolchen"
+        self.idx = self.server.register_namespace("ETHIP_BRIDGE")
 
         # get Objects node, this is where we should put our nodes
         self.objects_node = self.server.get_objects_node()
 
         # populating our address space
-        self.tag_root_node = self.objects_node.add_object(idx, "PYCOMM")
+        self.tag_root_node = self.objects_node.add_object(self.idx, "PYCOMM")
 
     def start(self):
         try:
-            self.dev_conx.subcribed_tags.append({'tag_name':'Tag1', 'value': 1})
-            self.dev_conx.subcribed_tags.append({'tag_name':'Tag2', 'value': 1})
-            self.dev_conx.subcribed_tags.append({'tag_name':'Tag3', 'value': 1})
+            self.dev_conx.subcribed_tags.append({'tag_name':'Tag1', 'tag_obj': None, 'node': None})
+            self.dev_conx.subcribed_tags.append({'tag_name':'Tag2', 'tag_obj': None, 'node': None})
+            self.dev_conx.subcribed_tags.append({'tag_name':'Tag3', 'tag_obj': None, 'node': None})
             # starting!
             self.server.start()
             while True:
                 for tag in self.dev_conx.subcribed_tags:
-                    print(tag)
+                    if tag['tag_obj']:
+                        if not tag['node']:
+                            tag['node'] = self.tag_root_node.add_variable(self.idx, tag['tag_name'], tag['tag_obj'][1])
+                            tag['node'].set_writable()
+                        tag['node'].set_value(tag['tag_obj'][1])
+                        print(tag)
                 time.sleep(0.5) #OPC pollrate
         finally:
             #close connection, remove subcsriptions, etc
@@ -87,7 +92,7 @@ class DeviceConnection(object):
                     for idx in self.tag_writes:
                         eip_dev.write(*self.tag_writes[idx])
                     for idx in range(len(self.subcribed_tags)):
-                        self.subcribed_tags[idx]['value'] = eip_dev.read(self.subcribed_tags[idx]['tag_name'])
+                        self.subcribed_tags[idx]['tag_obj'] = eip_dev.read(self.subcribed_tags[idx]['tag_name'])
                     print(f'Polled {t}')
                     dt = time.time() - t #get delta time
                     time.sleep(max(0,self.pollrate-dt))
@@ -98,6 +103,6 @@ if __name__ == "__main__":
 
     eip_conx = DeviceConnection()
     print(f'EIP polling? {eip_conx.start_polling()}')
-    time.sleep(5)
+    time.sleep(2)
     opc_conx = OpcConnection(eip_conx)
     opc_conx.start()
