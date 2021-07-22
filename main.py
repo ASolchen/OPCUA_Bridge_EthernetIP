@@ -1,9 +1,10 @@
 import sys
 sys.path.insert(0, "..")
 import time
+import threading
 
 from opcua import ua, Server
-from opcua.ua.object_ids import ObjectIds as dt
+from opcua.ua.object_ids import ObjectIds
 from opcua.ua.uaerrors import BadNoMatch
 
 from pycomm3 import LogixDriver
@@ -20,38 +21,28 @@ class OpcConnection(object):
         self.server.set_endpoint("opc.tcp://0.0.0.0:4840/ethernetip/server/")
         # setup our own namespace, not really necessary but should as spec
         uri = "https://github.com/ASolchen"
-        idx = server.register_namespace("ETHIP_BRIDGE")
+        idx = self.server.register_namespace("ETHIP_BRIDGE")
 
         # get Objects node, this is where we should put our nodes
-        self.objects_node = server.get_objects_node()
+        self.objects_node = self.server.get_objects_node()
 
         # populating our address space
         self.tag_root_node = self.objects_node.add_object(idx, "PYCOMM")
 
+    def start(self):
         try:
-
+            self.dev_conx.subcribed_tags.append({'tag_name':'Tag1', 'value': 1})
+            self.dev_conx.subcribed_tags.append({'tag_name':'Tag2', 'value': 1})
+            self.dev_conx.subcribed_tags.append({'tag_name':'Tag3', 'value': 1})
             # starting!
             self.server.start()
             while True:
-                time.sleep(0.01) #EthernetIP pollrate
-                #poll EthernetIP here
+                for tag in self.dev_conx.subcribed_tags:
+                    print(tag)
+                time.sleep(0.5) #OPC pollrate
         finally:
             #close connection, remove subcsriptions, etc
             self.server.stop()
-
-class LogixAtomicTag(object):
-    def __init__(self, tag_obj) -> None:
-        super().__init__()
-        self.tag_name = tag_obj['tag_name']
-        self.dim = tag_obj['dim']
-        self.symbol_address = tag_obj['symbol_address']
-        self.symbol_object_address = tag_obj['symbol_object_address']
-        self.software_control = tag_obj['software_control']
-        self.alias = tag_obj['alias']
-        self.external_access = tag_obj['external_access']
-        self.dimensions = tag_obj['dimensions']
-        self.tag_type = tag_obj['tag_type']
-        self.data_type = tag_obj['data_type']
 
 
 
@@ -59,10 +50,13 @@ class DeviceConnection(object):
 
     def __init__(self) -> None:
         super().__init__()
-        self.tags = {}
+        self.tags = None
+        self.pollrate = 0.5
+        self.poll_thread = threading.Thread(target=self.poll, daemon=False)
+        # try to connect and get a taglist
         try:
-            with LogixDriver('10.10.90.169') as plc:
-                l = plc.get_tag_list()
+            with LogixDriver('10.10.90.179') as eip_dev:
+                l = eip_dev.get_tag_list()
                 with open("PLC_getlist.json", "w") as fp:
                     fp.write(json.dumps(l, sort_keys=True, indent=4))
                 
@@ -75,12 +69,35 @@ class DeviceConnection(object):
             except Exception as e:
                 print(e)
                 sys.exit()
-        for tag_obj in l:
-                    if tag_obj['tag_type'] == 'atomic':
-                        tag = tag_obj['tag_name']
-                        self.tags[tag] = LogixAtomicTag(tag_obj)
-                    else:
-                        print(tag_obj)
+        self.tags = l
+        self.subcribed_tags = []
+        self.tag_writes = []
+    
+    def start_polling(self):
+        self.polling = True
+        if not self.poll_thread.is_alive():
+            self.poll_thread.start()
+        return self.poll_thread.is_alive()
+    
+    def poll(self):
+        try:
+            with LogixDriver('10.10.90.179') as eip_dev:
+                while self.polling:
+                    t = time.time() #get start time        
+                    for idx in self.tag_writes:
+                        eip_dev.write(*self.tag_writes[idx])
+                    for idx in range(len(self.subcribed_tags)):
+                        self.subcribed_tags[idx]['value'] = eip_dev.read(self.subcribed_tags[idx]['tag_name'])
+                    print(f'Polled {t}')
+                    dt = time.time() - t #get delta time
+                    time.sleep(max(0,self.pollrate-dt))
+        except Exception as e:
+            print(e)
 
 if __name__ == "__main__":
-    DeviceConnection()
+
+    eip_conx = DeviceConnection()
+    print(f'EIP polling? {eip_conx.start_polling()}')
+    time.sleep(5)
+    opc_conx = OpcConnection(eip_conx)
+    opc_conx.start()
