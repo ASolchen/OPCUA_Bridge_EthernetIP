@@ -1,4 +1,3 @@
-=======
 OPCUA_Bridge_EthernetIP
 =======
 
@@ -7,8 +6,8 @@ Introduction
 ============
 
 ``OPCUA_Bridge_EthernetIP`` aims to combine the following libraries in a communication bridge:
-.. _pycomm3: https://github.com/ottowayi/pycomm3
-.. _python-opcua: https://github.com/FreeOpcUa/python-opcua
+pycomm3: https://github.com/ottowayi/pycomm3
+python-opcua: https://github.com/FreeOpcUa/python-opcua
 
 Goal
 ============
