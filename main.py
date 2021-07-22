@@ -7,7 +7,7 @@ from opcua.ua.object_ids import ObjectIds as dt
 from opcua.ua.uaerrors import BadNoMatch
 
 from pycomm3 import LogixDriver
-  
+import json
 
 
 
@@ -60,14 +60,27 @@ class DeviceConnection(object):
     def __init__(self) -> None:
         super().__init__()
         self.tags = {}
-        with LogixDriver('10.10.90.179') as plc:
-            l = plc.get_tag_list()
-            for tag_obj in l:
-                if tag_obj['tag_type'] == 'atomic':
-                    tag = tag_obj['tag_name']
-                    self.tags[tag] = LogixAtomicTag(tag_obj)
-                else:
-                    print(tag_obj)
+        try:
+            with LogixDriver('10.10.90.169') as plc:
+                l = plc.get_tag_list()
+                with open("PLC_getlist.json", "w") as fp:
+                    fp.write(json.dumps(l, sort_keys=True, indent=4))
+                
+        except Exception as e:
+            print(e)
+            try:
+                with open("PLC_getlist.json", "r") as fp:
+                    l = json.loads(fp.read())
+
+            except Exception as e:
+                print(e)
+                sys.exit()
+        for tag_obj in l:
+                    if tag_obj['tag_type'] == 'atomic':
+                        tag = tag_obj['tag_name']
+                        self.tags[tag] = LogixAtomicTag(tag_obj)
+                    else:
+                        print(tag_obj)
 
 if __name__ == "__main__":
     DeviceConnection()
