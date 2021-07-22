@@ -1,0 +1,182 @@
+[
+    {
+        "alias": false,
+        "data_type": "DINT",
+        "dim": 0,
+        "dimensions": [
+            0,
+            0,
+            0
+        ],
+        "external_access": "Read/Write",
+        "instance_id": 4,
+        "software_control": 1140916225,
+        "symbol_address": 4384,
+        "symbol_object_address": 2051916,
+        "tag_name": "Tag1",
+        "tag_type": "atomic"
+    },
+    {
+        "alias": false,
+        "data_type": "REAL",
+        "dim": 0,
+        "dimensions": [
+            0,
+            0,
+            0
+        ],
+        "external_access": "Read/Write",
+        "instance_id": 5,
+        "software_control": 1946222595,
+        "symbol_address": 4232,
+        "symbol_object_address": 2051956,
+        "tag_name": "Tag2",
+        "tag_type": "atomic"
+    },
+    {
+        "alias": false,
+        "bit_position": 0,
+        "data_type": "BOOL",
+        "dim": 0,
+        "dimensions": [
+            0,
+            0,
+            0
+        ],
+        "external_access": "Read/Write",
+        "instance_id": 6,
+        "software_control": 1140916228,
+        "symbol_address": 4200,
+        "symbol_object_address": 2051996,
+        "tag_name": "Tag3",
+        "tag_type": "atomic"
+    },
+    {
+        "alias": false,
+        "data_type": {
+            "attributes": [
+                "ElementReal",
+                "ElementDint",
+                "ElementBool",
+                "ElementArray"
+            ],
+            "internal_tags": {
+                "ElementArray": {
+                    "array": 10,
+                    "data_type": "DINT",
+                    "offset": 12,
+                    "tag_type": "atomic"
+                },
+                "ElementBool": {
+                    "bit": 0,
+                    "data_type": "BOOL",
+                    "offset": 8,
+                    "tag_type": "atomic"
+                },
+                "ElementDint": {
+                    "array": 0,
+                    "data_type": "DINT",
+                    "offset": 4,
+                    "tag_type": "atomic"
+                },
+                "ElementReal": {
+                    "array": 0,
+                    "data_type": "REAL",
+                    "offset": 0,
+                    "tag_type": "atomic"
+                },
+                "ZZZZZZZZZZMyStruct2": {
+                    "array": 0,
+                    "data_type": "SINT",
+                    "offset": 8,
+                    "tag_type": "atomic"
+                }
+            },
+            "name": "MyStruct",
+            "template": {
+                "member_count": 5,
+                "object_definition_size": 40,
+                "structure_handle": 27577,
+                "structure_size": 52
+            }
+        },
+        "dim": 0,
+        "dimensions": [
+            0,
+            0,
+            0
+        ],
+        "external_access": "Read/Write",
+        "instance_id": 7,
+        "software_control": 67174405,
+        "symbol_address": 4120,
+        "symbol_object_address": 2052036,
+        "tag_name": "Tag4",
+        "tag_type": "struct",
+        "template_instance_id": 1223
+    },
+    {
+        "alias": false,
+        "data_type": {
+            "attributes": [
+                "ElementReal",
+                "ElementDint",
+                "ElementBool",
+                "ElementArray"
+            ],
+            "internal_tags": {
+                "ElementArray": {
+                    "array": 10,
+                    "data_type": "DINT",
+                    "offset": 12,
+                    "tag_type": "atomic"
+                },
+                "ElementBool": {
+                    "bit": 0,
+                    "data_type": "BOOL",
+                    "offset": 8,
+                    "tag_type": "atomic"
+                },
+                "ElementDint": {
+                    "array": 0,
+                    "data_type": "DINT",
+                    "offset": 4,
+                    "tag_type": "atomic"
+                },
+                "ElementReal": {
+                    "array": 0,
+                    "data_type": "REAL",
+                    "offset": 0,
+                    "tag_type": "atomic"
+                },
+                "ZZZZZZZZZZMyStruct2": {
+                    "array": 0,
+                    "data_type": "SINT",
+                    "offset": 8,
+                    "tag_type": "atomic"
+                }
+            },
+            "name": "MyStruct",
+            "template": {
+                "member_count": 5,
+                "object_definition_size": 40,
+                "structure_handle": 27577,
+                "structure_size": 52
+            }
+        },
+        "dim": 0,
+        "dimensions": [
+            0,
+            0,
+            0
+        ],
+        "external_access": "Read/Write",
+        "instance_id": 8,
+        "software_control": 67174406,
+        "symbol_address": 4416,
+        "symbol_object_address": 2018244,
+        "tag_name": "Tag5",
+        "tag_type": "struct",
+        "template_instance_id": 1223
+    }
+]
